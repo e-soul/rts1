@@ -43,7 +43,7 @@ Unexplored terrain is hidden. Explored terrain stays on the map but greys out wh
 
 Micro demands fast decisions, not precise aiming. Control is strictly single-unit: one selected unit and one selected hex tile, with no groups or select-all command. LB/RB always cycle through Shapers and Strikers. The left stick steps through tiles; the right stick pans the camera.
 
-A executes the selected unit's default action on the selected tile: attack-move for a Striker; move, clear, or convert for a Shaper, depending on the tile. Combat targeting is automatic. X and Y are reserved for unit-specific abilities, such as changing Striker form. B cancels an open interaction without stopping the unit. D-pad left trains a Shaper; D-pad right trains a Striker. No modifier chords, timed holds, or wheels are needed. The gamepad scheme is listed in [Game design](GAME_DESIGN.md).
+A executes the selected unit's default action on the selected tile: attack-move for a Striker; move, clear, or convert for a Shaper, depending on the tile. Combat targeting is automatic. X and Y are reserved for unit-specific abilities, such as changing Striker form. B cancels an open interaction without stopping the unit. D-pad left trains a Shaper; D-pad right trains a Striker. No modifier chords, timed holds, or wheels are needed. The gamepad scheme is listed in [Game design](#game-design).
 
 ## Play
 
@@ -63,7 +63,7 @@ Design interpretation: Jesse Schell's [The Art of Game Design](https://schellgam
 
 # Game design
 
-This document describes the gamepad scheme and movement rules for the [game concept](GAME_CONCEPT.md). It is a prototype design to validate through play.
+The following gamepad scheme and movement rules develop the [game concept](#game-concept). This is a prototype design to validate through play.
 
 ## Control model
 
@@ -149,37 +149,33 @@ Move smoothly between neighboring hex centers at the unit's movement speed. Logi
 
 ### Movement decision tree
 
-Process new orders immediately using rule 5. Evaluate route decisions at tile boundaries; resolve competing requests together using rules 2 and 3.
+Apply new orders using section 5. At tile boundaries, use this summary of the rules above; every requested step remains subject to sections 2 and 3.
 
 ```text
-Returning from a cancelled step? -> Finish returning to the source.
-Step in progress? -> Continue unless cancelled by a new order.
-Form change in progress? -> Finish it before moving.
-In friendly transit? -> Reach a free stopping tile; otherwise wait visibly.
-Stopping after denied entry or loss of route? -> Settle under section 2; if unreachable, remain visibly blocked.
+Step, return, or form change in progress? -> Follow sections 4 and 5.
+In friendly transit? -> Follow section 6.
+Settling after interruption? -> Follow section 2 and the blocked-position rule.
 No movement/work order? -> Hold position.
-Attack-move with an enemy in range? -> Fight from an occupied, claimed stopping position; retain order.
-Valid destination/work position reached? -> Claim stop; finish move or work.
-Otherwise -> Choose route; check entry and any required stopping claim.
-  Granted? -> Start the next step.
-  Entry denied by an enemy? -> Replace the movement target using section 3.
-  Friendly stopping claim denied? -> Choose an alternative using section 2.
-  No route? -> Use the current tile as the stopping target under section 2; end movement once settled.
+Attack-move combat? -> Follow the default-action rules.
+At the destination/work position? -> Settle or work under section 2.
+Otherwise -> Request the next step under sections 2 and 3.
+  No route? -> Follow the movement introduction's stopping rule.
 ```
 
 ## Training
 
-- Each D-pad press queues one unit; holding the button does not repeat purchases.
-- Queued units reserve energy and count toward the eight-unit limit.
-- Show costs, queue progress, and unit capacity. Reject unaffordable or over-capacity requests with clear feedback.
-- Training and unit arrival never change the selected unit, selected tile, or camera.
+- Each training-button press queues one unit, reserving energy and capacity; holding does not repeat purchases.
+- Show costs, queue progress, and capacity. Reject requests exceeding available energy or the eight-unit limit with clear feedback.
+- Training and arrival never change selection or the camera.
 
 ## First playtest
 
 Start with three or four units before testing the eight-unit ceiling. Check that cycling and tile targeting are quick, that several units can be sent to the same destination comfortably, and that rescuing a Shaper does not cause accidental orders to defenders. Add controls only when play reveals a concrete need.
 
-Movement tests: a nearer unit reaches a shared target before an earlier-ordered distant unit; units pass in both directions through stationary Guards without moving them; a blocked passing unit waits attackably without acting; crowded destinations never produce two settled units on one tile.
+Test these scenarios against the movement rules:
 
-Crossing tests: friendlies crossing one tile from different axes never block each other; enemies requesting the same tile or opposing steps on one edge cannot overlap, regardless of attack-move.
-
-Cancellation tests: reversing immediately frees the destination for another unit; logical occupancy stays at the source until an arrival; return time matches distance travelled; repeated orders cannot increase movement speed or attack rate.
+- Shared and crowded destinations, including a nearer unit ordered after a distant one.
+- Friendly crossings from different directions and passage through stationary Guards.
+- A blocked unit overlapping a friendly, including loss of every reachable stopping position.
+- Opposing entry requests and interrupted movement toward a work position.
+- Mid-step reversal and retargeting, including stopping-claim release, logical occupancy, return time, and repeated cancellation without speed or attack-rate gains.
