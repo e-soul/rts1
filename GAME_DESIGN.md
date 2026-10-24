@@ -96,7 +96,7 @@ Other buttons remain unassigned until needed. No modifier chords, timed holds, r
 
 | Unit | Selected tile | Action |
 | --- | --- | --- |
-| Striker | Destination | Attack-move: advance and engage enemies along the route without chasing far away. |
+| Striker | Destination | Attack-move: advance, fighting enemies met along the route, without pursuing. |
 | Shaper | Clear ground | Move. |
 | Shaper | Blocked terrain | Clear. |
 | Shaper | Neutralized Emitter | Convert. |
@@ -105,7 +105,7 @@ Show the action before A is pressed. Invalid or unreachable actions explain why 
 
 Units must work without constant attention: Guards hold their positions, and Shapers finish assigned work.
 
-An attack-moving Striker fights only while occupying a stopping position it has claimed. It retains its movement target during combat and resumes when no visible enemy is in range, without pursuing off-route. A settled Striker also fights automatically.
+An attack-moving Striker holds when a visible enemy is in range or when enemies cut its route (section 3.1): it settles at the nearest free tile it can reach (chosen as in section 2.2) and fights from there. It continues toward its target when no visible enemy is in range and a route is open. It never leaves its route to pursue. A settled Striker also fights automatically.
 
 ## Movement
 
@@ -113,7 +113,7 @@ An attack-moving Striker fights only while occupying a stopping position it has 
 
 A movement order is executed as a series of discrete steps between neighboring tiles. A planned route grants no permission to move: every step must satisfy the applicable movement rules before it starts. Animation is continuous; logical movement follows these steps.
 
-Plan routes using known terrain and visible enemies. If an accepted movement order has no route to its target, abandon that target and use the current tile as the stopping target under section 2. End movement once settled. If no valid stopping position is reachable, remain visibly blocked.
+Plan routes using known terrain. A target with no route on known terrain is invalid and is rejected under the default-action rules. Visible enemies never make a target unreachable; they block entry under section 3. End movement once settled. If no valid stopping position is reachable, remain visibly blocked.
 
 ### 1. Friendlies never block passage
 
@@ -128,7 +128,7 @@ Friendlies may traverse the same tile simultaneously in any direction, including
 
 ### 3. Enemies block entry
 
-1. Before starting a step, check that no enemy occupies or is already entering the destination. If another route to the target exists, take it. Otherwise hold: claim the current tile as a stopping position under section 2, keep the target pending, and show it as blocked by an enemy. A holding unit is settled: a Striker fights; a Shaper does not work until it reaches a valid work position. Movement resumes once the step is permitted or a route exists.
+1. A step may not enter a tile that an enemy occupies or is entering. If visible enemies cut off every route to the target, the unit does not give up the target: it moves to the nearest free tile it can reach (chosen as in section 2.2), settles there, and shows the target as blocked by an enemy. While holding, a Striker fights and a Shaper waits. When a route opens, the unit continues to its target.
 2. If opposing units request the same destination at the same time, select a winning side using a conflict-resolution policy (not yet defined). Compatible friendly pass-through requests may proceed; denied requests follow the previous rule.
 
 ### 4. Logical position changes on arrival
