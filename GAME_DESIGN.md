@@ -19,9 +19,9 @@ The map is a hex grid. Terrain is the enemy's advantage: flying enemies cross bl
 
 The shape of the route is the player's choice. A narrow corridor funnels ground enemies into Guard Strikers; a wide clearing offers room but a wider front. A Guard Striker can plug a gap, but enemies fight it rather than walk past. Ground enemies eventually use the passages you open: more access is not always better.
 
-Ground and air are separate movement layers. One settled unit per tile per layer; moving friendlies can pass through each other at normal speed without displacing stationary units. There is no teleportation or permanent stacking. A passing unit remains attackable; if trapped overlapping a friendly, it waits visibly and cannot attack, work, or change form until clear. Hostile units block passage on their layer. Logic is discrete; motion is smooth. The Core and Emitters occupy seven hexes; everything else one. Range is counted in hexes.
+Ground and air are separate movement layers. One settled unit per tile per layer; friendlies pass through each other, hostiles block each other. Logic is discrete; motion is smooth. The Core and Emitters occupy seven hexes; everything else one. Range is counted in hexes. The rules are defined in [Movement](#movement).
 
-The map is about four console viewports at a single fixed zoom. On a gamepad the right stick pans the camera; cycling units preserves the selected tile and camera position. Phones show less of the map and swipe to pan; the map does not change.
+The map is about four console viewports at a single fixed zoom. Phones show less of the map and swipe to pan; the map does not change.
 
 ## Economy
 
@@ -41,13 +41,11 @@ Unexplored terrain is hidden. Explored terrain stays on the map but greys out wh
 
 ## Controls
 
-Micro demands fast decisions, not precise aiming. Control is strictly single-unit: one selected unit and one selected hex tile, with no groups or select-all command. LB/RB always cycle through Shapers and Strikers. The left stick steps through tiles; the right stick pans the camera.
-
-A executes the selected unit's default action on the selected tile: attack-move for a Striker; move, clear, or convert for a Shaper, depending on the tile. Combat targeting is automatic. X and Y are reserved for unit-specific abilities, such as changing Striker form. B cancels an open interaction without stopping the unit. D-pad left trains a Shaper; D-pad right trains a Striker. No modifier chords, timed holds, or wheels are needed. The gamepad scheme is listed in [Game design](#game-design).
+Micro demands fast decisions, not precise aiming. Control is strictly single-unit: one selected unit and one selected hex tile, with no groups or select-all command. One button executes the selected unit's default action on the selected tile; combat targeting is automatic. No modifier chords, timed holds, or wheels are needed. The scheme is defined in [Control model](#control-model), [Gamepad controls](#gamepad-controls), and [Default action: A](#default-action-a).
 
 ## Play
 
-**Defend -> clear -> capture -> hold**, while protecting the Core. Macro decisions allocate energy, Shapers, and routes. Micro decisions position individual Strikers, choose their form, protect Shapers, and decide when to advance or withdraw. Units must remain useful unattended: Guards hold their positions, Shapers complete assigned work, and attack-moving Strikers do not chase enemies far from their route.
+**Defend -> clear -> capture -> hold**, while protecting the Core. Macro decisions allocate energy, Shapers, and routes. Micro decisions position individual Strikers, choose their form, protect Shapers, and decide when to advance or withdraw. Units must remain useful unattended: Guards hold their positions, Shapers complete assigned work, and attack-moving Strikers do not leave their route to pursue.
 
 Each meaningful choice exchanges one advantage for another: a Striker in Guard form at home versus one advancing, a direct assault versus a defensible route, another Emitter's income versus another front to hold. Maps must make these alternatives useful in different circumstances.
 
