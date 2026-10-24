@@ -113,7 +113,7 @@ An attack-moving Striker fights only while occupying a stopping position it has 
 
 A movement order is executed as a series of discrete steps between neighboring tiles. A planned route grants no permission to move: every step must satisfy the applicable movement rules before it starts. Animation is continuous; logical movement follows these steps.
 
-Plan routes using known terrain and visible enemies. If an accepted movement order has no route to its target, abandon that target and use the current tile as the stopping target under section 2. End movement once settled; settling does not complete interrupted clearing or conversion. If no valid stopping position is reachable, remain visibly blocked.
+Plan routes using known terrain and visible enemies. If an accepted movement order has no route to its target, abandon that target and use the current tile as the stopping target under section 2. End movement once settled. If no valid stopping position is reachable, remain visibly blocked.
 
 ### 1. Friendlies never block passage
 
@@ -128,7 +128,7 @@ Friendlies may traverse the same tile simultaneously in any direction, including
 
 ### 3. Enemies block entry
 
-1. Before starting a step, check that no enemy occupies or is already entering the destination. If entry is denied, abandon the original movement target and use the current tile as the stopping target, applying section 2. End movement once settled. This is a stopping position, not a work position; settling does not complete interrupted clearing or conversion.
+1. Before starting a step, check that no enemy occupies or is already entering the destination. If another route to the target exists, take it. Otherwise hold: claim the current tile as a stopping position under section 2, keep the target pending, and show it as blocked by an enemy. A holding unit is settled: a Striker fights; a Shaper does not work until it reaches a valid work position. Movement resumes once the step is permitted or a route exists.
 2. If opposing units request the same destination at the same time, select a winning side using a conflict-resolution policy (not yet defined). Compatible friendly pass-through requests may proceed; denied requests follow the previous rule.
 
 ### 4. Logical position changes on arrival
@@ -154,7 +154,7 @@ Apply new orders using section 5. At tile boundaries, use this summary of the ru
 ```text
 Step, return, or form change in progress? -> Follow sections 4 and 5.
 In friendly transit? -> Follow section 6.
-Settling after interruption? -> Follow section 2 and the blocked-position rule.
+Holding with a pending target? -> Settled under section 3; resume when permitted.
 No movement/work order? -> Hold position.
 Attack-move combat? -> Follow the default-action rules.
 At the destination/work position? -> Settle or work under section 2.
