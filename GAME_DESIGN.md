@@ -122,9 +122,9 @@ Friendlies may traverse the same tile simultaneously in any direction, including
 ### 2. Only one unit may claim a stopping position
 
 1. A final step and its stopping claim are granted together, only if both are permitted, immediately before movement starts. If already on the stopping tile, claim it immediately if free. Release the source claim when the first departing step completes.
-2. If the target is occupied or claimed by another friendly, choose a free reachable tile by minimum hex distance to the target, then shortest route from the current tile, then stable tile order. Show the chosen destination.
+2. If the target is occupied or claimed by another friendly, choose a free reachable tile by shortest walking distance to the target, then shortest route from the current tile, then stable tile order. Show the chosen destination.
 3. If multiple friendlies claim the same stopping position simultaneously, allow one; the others choose alternatives using the previous rule. Friendly pass-through requests do not conflict.
-4. For clearing and conversion, choose only among valid adjacent work positions.
+4. For clearing and conversion, choose only among valid adjacent work positions. If none is free, hold at the nearest free tile it can reach, keep the work pending, and continue when a work position frees.
 
 ### 3. Enemies block entry
 
