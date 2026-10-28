@@ -1,0 +1,20 @@
+{
+	"name": "Guard plugs a gap",
+	"description": "The only route from the spawn pocket to the Core runs through a one-tile corridor held by a Guard. Enemies must fight the Guard; they cannot walk past it.",
+	"rows": [
+		"####################",
+		"#.....##########...#",
+		"#.....##########...#",
+		"#..C.............S.#",
+		"#.....##########...#",
+		"#.....##########...#",
+		"####################"
+	],
+	"units": [
+		{ "type": "striker", "form": "guard", "pos": [8, 3] },
+		{ "type": "striker", "form": "assault", "pos": [5, 1] },
+		{ "type": "shaper", "pos": [1, 1] }
+	],
+	"spawning": { "enabled": true, "interval": 4.0 },
+	"camera": [8, 3]
+}

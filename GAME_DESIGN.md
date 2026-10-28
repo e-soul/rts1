@@ -63,6 +63,8 @@ Design interpretation: Jesse Schell's [The Art of Game Design](https://schellgam
 
 The following gamepad scheme and movement rules develop the [game concept](#game-concept). This is a prototype design to validate through play.
 
+The [rules prototype](prototype/README.md) validated the control model, the default action, Striker forms, Shaper clearing, ground enemies, and the movement rules: they play well and feel good on a gamepad.
+
 ## Control model
 
 **One selected unit. One selected tile. No groups.**
@@ -70,8 +72,10 @@ The following gamepad scheme and movement rules develop the [game concept](#game
 - At most eight units, counting Shapers and Strikers together.
 - LB/RB always cycle through living units in stable order, wrapping at either end.
 - Cycling units preserves the selected tile and camera position. To send several units toward the same destination: A, RB, A, RB, A.
-- The Core and Emitters are not part of the unit cycle. There are no gates or construction.
-- Clearly highlight the selected unit and tile, with an offscreen indicator for the unit when needed.
+- The Core and Emitters are not part of the unit cycle.
+- Clearly highlight the selected unit and tile, with an offscreen indicator for the unit when needed: an arrow at the screen edge pointing toward the unit, labelled with its name.
+- The left stick snaps to the six hex directions, with hysteresis between neighbouring directions so the tile does not jitter. Pushing the stick moves the tile one hex and holding the stick repeats the move after a short pause.
+- The selected tile and the camera stay coupled: panning keeps the tile inside the view, and stepping the tile scrolls the camera to keep it visible. The camera is clamped to the map.
 
 ## Gamepad controls
 
@@ -99,11 +103,17 @@ Other buttons remain unassigned until needed. No modifier chords, timed holds, r
 | Shaper | Blocked terrain | Clear. |
 | Shaper | Neutralized Emitter | Convert. |
 
-Show the action before A is pressed. Invalid or unreachable actions explain why and preserve the existing order; never silently substitute another action. Selecting an enemy tile does not change a Striker's attack-move into a pursuit order.
+Show the action before A is pressed, including the planned route and, when section 2.2 substitutes a destination, the tile the unit will actually stop on. This preview is what makes alternative destinations readable rather than surprising. Invalid or unreachable actions explain why and preserve the existing order. Selecting an enemy tile does not change a Striker's attack-move into a pursuit order.
 
 Units must work without constant attention: Guards hold their positions, and Shapers finish assigned work.
 
-An attack-moving Striker holds when a visible enemy is in range or when enemies cut its route (section 3.1): it settles at the nearest free tile it can reach (chosen as in section 2.2) and fights from there. It continues toward its target when no visible enemy is in range and a route is open. It never leaves its route to pursue. A settled Striker also fights automatically.
+An attack-moving Striker holds when a visible enemy is in range: it finishes its current step and, if that tile is a free stopping position, claims it and fights from there. While passing over a friendly it cannot fight, so it keeps moving along its route and holds at the first free stopping position where an enemy is still in range; it never backtracks to fight. When enemies cut its route (section 3.1), it settles at the nearest free tile it can reach (chosen as in section 2.2) and fights from there. It continues toward its target when no visible enemy is in range and a route is open. It never leaves its route to pursue. A settled Striker also fights automatically.
+
+A Striker cannot attack while changing form, so a form change in contact is a real commitment. Several Shapers may clear the same tile from different work positions; their work combines, so extra Shapers speed up clearing.
+
+## Ground enemies
+
+A ground enemy attack-moves toward the nearest target by walking distance over cleared terrain: a player unit or a tile adjacent to the Core. It holds and fights anything in range, never pursues, re-evaluates its target periodically, and follows the same movement rules as player units with the sides reversed.
 
 ## Movement
 
@@ -112,6 +122,8 @@ An attack-moving Striker holds when a visible enemy is in range or when enemies 
 A movement order is executed as a series of discrete steps between neighboring tiles. A planned route grants no permission to move: every step must satisfy the applicable movement rules before it starts. Animation is continuous; logical movement follows these steps.
 
 Plan routes using known terrain. A target with no route on known terrain is invalid and is rejected under the default-action rules. Visible enemies never make a target unreachable; they block entry under section 3. End movement once settled. If no valid stopping position is reachable, remain visibly blocked.
+
+The logic is deterministic. It advances in fixed ticks, and every duration (steps, returns, form changes, clearing, attack timing) is a whole number of ticks. Units resolve in stable ID order, and **stable tile order** means row, then column. Routes are shortest by step count, with ties broken by a fixed direction order. Animation interpolates between ticks.
 
 ### 1. Friendlies never block passage
 
@@ -122,12 +134,12 @@ Friendlies may traverse the same tile simultaneously in any direction, including
 1. A final step and its stopping claim are granted together, only if both are permitted, immediately before movement starts. If already on the stopping tile, claim it immediately if free. Release the source claim when the first departing step completes.
 2. If the target is occupied or claimed by another friendly, choose a free reachable tile by shortest walking distance to the target, then shortest route from the current tile, then stable tile order. Show the chosen destination.
 3. If multiple friendlies claim the same stopping position simultaneously, allow one; the others choose alternatives using the previous rule. Friendly pass-through requests do not conflict.
-4. For clearing and conversion, choose only among valid adjacent work positions. If none is free, hold at the nearest free tile it can reach, keep the work pending, and continue when a work position frees.
+4. For clearing and conversion, choose only among valid adjacent work positions: free stopping positions reachable over known terrain. If none is free, hold at the nearest free tile it can reach, keep the work pending, and continue when a work position frees.
 
 ### 3. Enemies block entry
 
 1. A step may not enter a tile that an enemy occupies or is entering. If visible enemies cut off every route to the target, the unit does not give up the target: it moves to the nearest free tile it can reach (chosen as in section 2.2), settles there, and shows the target as blocked by an enemy. While holding, a Striker fights and a Shaper waits. When a route opens, the unit continues to its target.
-2. If opposing units request the same destination at the same time, select a winning side using a conflict-resolution policy (not yet defined). Compatible friendly pass-through requests may proceed; denied requests follow the previous rule.
+2. If opposing units request the same destination, the earlier request wins: a tile that an enemy is already entering is blocked under the previous rule. Requests made in the same tick are a tie, and **the player wins ties**. Detect ties before granting stopping claims; otherwise the winner's claim makes the loser look claim-blocked instead of tie-blocked. Compatible friendly pass-through requests may proceed; denied requests follow the previous rule. Ties are uncommon because both sides must request the same tile in the same tick; the policy favours the player and is simple to explain.
 
 ### 4. Logical position changes on arrival
 
@@ -166,14 +178,22 @@ Otherwise -> Request the next step under sections 2 and 3.
 - Show costs, queue progress, and capacity. Reject requests exceeding available energy or the eight-unit limit with clear feedback.
 - Training and arrival never change selection or the camera.
 
-## First playtest
+## Playtests
 
-Start with three or four units before testing the eight-unit ceiling. Check that cycling and tile targeting are quick, that several units can be sent to the same destination comfortably, and that rescuing a Shaper does not cause accidental orders to defenders. Add controls only when play reveals a concrete need.
+### First playtest
 
-Test these scenarios against the movement rules:
+Done with the [rules prototype](prototype/README.md), which covered three or four units, cycling and tile targeting, sending several units to one destination, and rescuing a Shaper without disturbing defenders. Control and movement play well and feel good; no new controls were needed, and B still has no interaction to cancel.
+
+These movement scenarios are now setup files shared by the sandbox and an automated test suite, which also checks the rules' invariants under randomised orders and confirms determinism:
 
 - Shared and crowded destinations, including a nearer unit ordered after a distant one.
 - Friendly crossings from different directions and passage through stationary Guards.
 - A blocked unit overlapping a friendly, including loss of every reachable stopping position.
 - Opposing entry requests and interrupted movement toward a work position.
 - Mid-step reversal and retargeting, including stopping-claim release, logical occupancy, return time, and repeated cancellation without speed or attack-rate gains.
+
+Keep new rules expressible as setups and tests the same way.
+
+### Next playtest
+
+Add energy, training, Emitters (neutralize, convert, retake, shields), flyers, and fog of war. Check that LB/RB cycling stays quick with eight units under active pressure, that the training buttons work without breaking focus, and whether play reveals a concrete need for Y or for B. Add controls only when play reveals a concrete need.

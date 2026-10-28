@@ -1,0 +1,24 @@
+{
+	"name": "Mid-step reversal",
+	"description": "Open ground with a tough, harmless enemy in range of the Strikers. Retarget units mid-step: they return to the source before turning, release claims immediately, and gain no speed or attack rate from repeated cancellation.",
+	"rows": [
+		"##############",
+		"#............#",
+		"#............#",
+		"#............#",
+		"#............#",
+		"#............#",
+		"##############"
+	],
+	"units": [
+		{ "type": "striker", "form": "assault", "pos": [4, 3] },
+		{ "type": "striker", "form": "assault", "pos": [8, 3] },
+		{ "type": "shaper", "pos": [6, 5] }
+	],
+	"enemies": [
+		{ "pos": [6, 1] }
+	],
+	"enemy_ai": false,
+	"tuning": { "units": { "enemy": { "hp": 100000, "damage": 0 } } },
+	"camera": [6, 3]
+}

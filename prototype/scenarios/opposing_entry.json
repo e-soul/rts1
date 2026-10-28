@@ -1,0 +1,21 @@
+{
+	"name": "Opposing entry",
+	"description": "A one-tile gap at (5,2) between the player's room and an enemy pocket. The Shaper and the enemy are each one step from the gap. Same-tick requests go to the player (opposing_entry_policy); earlier requests always win. In play, enemies spawn behind the gap and push through it.",
+	"rows": [
+		"###########",
+		"#...###...#",
+		"#.........#",
+		"#...###.S.#",
+		"###########"
+	],
+	"units": [
+		{ "type": "shaper", "pos": [4, 2] },
+		{ "type": "striker", "form": "assault", "pos": [1, 1] },
+		{ "type": "striker", "form": "assault", "pos": [1, 3] }
+	],
+	"enemies": [
+		{ "pos": [6, 2] }
+	],
+	"spawning": { "enabled": true, "interval": 8.0 },
+	"camera": [5, 2]
+}

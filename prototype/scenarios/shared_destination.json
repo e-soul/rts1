@@ -1,0 +1,23 @@
+{
+	"name": "Shared destination",
+	"description": "Send several units to one tile (A, RB, A, RB, A). Order a distant unit first, then a nearer one: the nearer one should take the tile. Try tile (12,4).",
+	"rows": [
+		"################",
+		"#..............#",
+		"#..............#",
+		"#..............#",
+		"#..............#",
+		"#..............#",
+		"#..............#",
+		"#..............#",
+		"################"
+	],
+	"units": [
+		{ "type": "striker", "form": "assault", "pos": [1, 1] },
+		{ "type": "striker", "form": "assault", "pos": [1, 7] },
+		{ "type": "striker", "form": "guard", "pos": [3, 4] },
+		{ "type": "shaper", "pos": [10, 4] }
+	],
+	"enemy_ai": false,
+	"camera": [12, 4]
+}

@@ -1,0 +1,24 @@
+{
+	"name": "Blocked overlap",
+	"description": "A Shaper (#4) must pass through three Shapers in a dead-end corridor to reach the free tile at (6,2). Enemies are inert and scripted by the tests: when they take the free tile and the tile behind, the passing Shaper loses every stopping position and stays visibly blocked on top of a friendly.",
+	"rows": [
+		"#########",
+		"#########",
+		"#.......#",
+		"#########",
+		"#########"
+	],
+	"units": [
+		{ "type": "shaper", "pos": [3, 2] },
+		{ "type": "shaper", "pos": [4, 2] },
+		{ "type": "shaper", "pos": [5, 2] },
+		{ "type": "shaper", "pos": [2, 2] }
+	],
+	"enemies": [
+		{ "pos": [1, 2] },
+		{ "pos": [7, 2] }
+	],
+	"enemy_ai": false,
+	"tuning": { "units": { "enemy": { "damage": 0 } } },
+	"camera": [4, 2]
+}

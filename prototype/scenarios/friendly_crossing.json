@@ -1,0 +1,22 @@
+{
+	"name": "Friendly crossing",
+	"description": "Two rooms joined by a one-tile corridor with a stationary Guard in the middle. Send west units east and east units west: they pass through each other and through the Guard without slowing down.",
+	"rows": [
+		"###################",
+		"#...###########...#",
+		"#...###########...#",
+		"#.................#",
+		"#...###########...#",
+		"#...###########...#",
+		"###################"
+	],
+	"units": [
+		{ "type": "striker", "form": "guard", "pos": [9, 3] },
+		{ "type": "striker", "form": "assault", "pos": [2, 2] },
+		{ "type": "shaper", "pos": [2, 4] },
+		{ "type": "striker", "form": "assault", "pos": [16, 2] },
+		{ "type": "shaper", "pos": [16, 4] }
+	],
+	"enemy_ai": false,
+	"camera": [9, 3]
+}

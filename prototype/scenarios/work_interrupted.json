@@ -1,0 +1,18 @@
+{
+	"name": "Work interrupted",
+	"description": "The blocked tile (5,3) has a single work position at (5,2). Order the Shaper to clear it, then send the Striker to (5,2): the Shaper holds nearby with the work pending, and resumes when the Striker leaves. Clearing it opens a spawn pocket behind.",
+	"rows": [
+		"###########",
+		"#.........#",
+		"#.....#...#",
+		"###########",
+		"#....S....#",
+		"###########"
+	],
+	"units": [
+		{ "type": "shaper", "pos": [1, 1] },
+		{ "type": "striker", "form": "assault", "pos": [7, 1] }
+	],
+	"spawning": { "enabled": false, "interval": 8.0 },
+	"camera": [5, 2]
+}
