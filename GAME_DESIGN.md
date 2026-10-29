@@ -1,4 +1,4 @@
-# Game concept
+# RTS1: Think Strategy 1st - Game concept
 
 **Survive the attacks, clear a path, and take the enemy's Emitters.**
 

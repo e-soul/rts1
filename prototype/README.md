@@ -14,6 +14,9 @@ $godot = "D:\app\Godot_v4.7.2-stable"
 & "$godot\Godot_v4.7.2-stable_win64_console.exe" --headless --path D:\dev\src\rts1\prototype --script res://tests/run_tests.gd -- [filter]
 # Windowed smoke test of the presentation; optional screenshot directory
 & "$godot\Godot_v4.7.2-stable_win64_console.exe" --path D:\dev\src\rts1\prototype --script res://tests/smoke_view.gd -- [screenshot_dir]
+# Web build into ../build/web; the folder must exist (deploying to GitHub Pages: see PROTOTYPE_PLAN.md, "Web build")
+New-Item -ItemType Directory -Force D:\dev\src\rts1\build\web | Out-Null
+& "$godot\Godot_v4.7.2-stable_win64_console.exe" --headless --path D:\dev\src\rts1\prototype --export-release "Web"
 ```
 
 ## Controls

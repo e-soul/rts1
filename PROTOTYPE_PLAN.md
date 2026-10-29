@@ -22,6 +22,7 @@ The prototype serves two equal purposes:
 - Open-ended sandbox for hands-on play.
 - First-playtest scenarios from [First playtest](./GAME_DESIGN.md#first-playtest), as automated tests and as loadable sandbox setups.
 - A simple opposing-entry policy for section 3.2 (see [Opposing entry policy](#opposing-entry-policy)).
+- A web build that can be deployed to GitHub Pages (see [Web build](#web-build-github-pages)).
 
 ### Out of scope
 
@@ -54,6 +55,58 @@ The prototype serves two equal purposes:
   & "D:\app\Godot_v4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe" --headless --path D:\dev\src\rts1\prototype --script res://tests/run_tests.gd
   ```
 
+### Web build (GitHub Pages)
+
+The prototype also exports to the web so it can be shared on GitHub Pages, played with the keyboard or a gamepad in a desktop browser.
+
+- **Preset:** `prototype/export_presets.cfg` defines a `Web` preset, exported to `build/web/index.html` at the repository root (`build/` is git-ignored).
+  - **Threads off:** it uses the single-threaded template (`variant/thread_support=false`). GitHub Pages cannot send the cross-origin isolation headers that threaded builds need.
+  - **JSON included:** setups and tuning are read with `FileAccess`, so `data/*.json` and `scenarios/*.json` are added explicitly. Godot only packs resources by default.
+  - **Tests left out:** `tests/` is excluded.
+- **Export templates:** the 4.7.2 templates must be installed: in the editor, **Editor > Manage Export Templates > Download and Install**. They live in `%APPDATA%\Godot\export_templates\4.7.2.stable`.
+- **Deployment branch:** the site is published from an orphan `gh-pages` branch. It is checked out as a git worktree at `build/web`, so each export lands directly in it, and it shares the repository's git configuration.
+
+One-time setup, after the repository has a GitHub remote named `origin`:
+
+```powershell
+# Must run before the first export: the worktree directory must not exist or must be empty.
+git -C D:\dev\src\rts1 worktree add --orphan -b gh-pages D:\dev\src\rts1\build\web
+New-Item -ItemType File D:\dev\src\rts1\build\web\.nojekyll   # serve files as-is, skip Jekyll
+```
+
+Then on GitHub: **Settings > Pages > Build and deployment > Source: Deploy from a branch**, branch `gh-pages`, folder `/ (root)`. The game is served at `https://<user>.github.io/<repository>/`.
+
+Build (the worktree above creates `build/web`; for a local-only build, create the folder first with `New-Item -ItemType Directory D:\dev\src\rts1\build\web`, because Godot does not create it):
+
+```powershell
+& "D:\app\Godot_v4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe" --headless --path D:\dev\src\rts1\prototype --export-release "Web"
+```
+
+Test locally before deploying. Any static server works; opening `index.html` from disk does not.
+
+```powershell
+python -m http.server 8000 --directory D:\dev\src\rts1\build\web   # then open http://localhost:8000
+```
+
+Deploy:
+
+```powershell
+$web = "D:\dev\src\rts1\build\web"
+git -C $web add -A
+git -C $web commit -m "Deploy web build"            # first deploy
+git -C $web push -u origin gh-pages
+# Later deploys: replace the single commit, so ~40 MB of wasm per build does not pile up in history.
+git -C $web add -A
+git -C $web commit --amend -m "Deploy web build"
+git -C $web push --force origin gh-pages
+```
+
+Browser notes:
+
+- **Focus:** click the game once so the canvas has keyboard focus.
+- **F-keys:** the game captures F1-F6, so F5 resets the setup instead of reloading the page.
+- **Gamepads:** browsers expose a gamepad only after one of its buttons is pressed while the page is open. Check controller feel on the desktop build first; browser gamepad mappings can differ.
+
 ## Architecture
 
 **Simulation and presentation are separate.** This mirrors the design's "logic is discrete; motion is smooth" and keeps the rules portable to Unreal.
@@ -69,6 +122,7 @@ The prototype serves two equal purposes:
 ```text
 prototype/
   project.godot
+  export_presets.cfg  # Web preset for GitHub Pages
   sim/
     hex.gd            # axial coordinates, neighbours, distance, line, stable ordering
     grid.gd           # terrain, structure footprints
