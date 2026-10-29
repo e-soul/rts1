@@ -63,42 +63,27 @@ The prototype also exports to the web so it can be shared on GitHub Pages, playe
   - **Threads off:** it uses the single-threaded template (`variant/thread_support=false`). GitHub Pages cannot send the cross-origin isolation headers that threaded builds need.
   - **JSON included:** setups and tuning are read with `FileAccess`, so `data/*.json` and `scenarios/*.json` are added explicitly. Godot only packs resources by default.
   - **Tests left out:** `tests/` is excluded.
-- **Export templates:** the 4.7.2 templates must be installed: in the editor, **Editor > Manage Export Templates > Download and Install**. They live in `%APPDATA%\Godot\export_templates\4.7.2.stable`.
-- **Deployment branch:** the site is published from an orphan `gh-pages` branch. It is checked out as a git worktree at `build/web`, so each export lands directly in it, and it shares the repository's git configuration.
+- **Export templates:** a local export needs the 4.7.2 templates installed: in the editor, **Editor > Manage Export Templates > Download and Install**. They live in `%APPDATA%\Godot\export_templates\4.7.2.stable`.
+- **Deployment:** the GitHub Actions workflow [`.github/workflows/deploy-prototype.yml`](./.github/workflows/deploy-prototype.yml) publishes the game. It runs only when triggered manually from the **Actions** tab (**Deploy prototype to Pages > Run workflow**, or `gh workflow run deploy-prototype.yml`). It:
+  1. downloads the official Godot 4.7.2 Linux build and keeps only the single-threaded web template from the export templates archive (~1.3 GB), caching both so later runs skip the download;
+  2. runs the headless rules tests, so a failing build is never published;
+  3. exports the `Web` preset and deploys `build/web` to GitHub Pages.
 
-One-time setup, after the repository has a GitHub remote named `origin`:
+  To change the Godot version, update `GODOT_VERSION` and `GODOT_RELEASE` in the workflow together with the local install.
 
-```powershell
-# Must run before the first export: the worktree directory must not exist or must be empty.
-git -C D:\dev\src\rts1 worktree add --orphan -b gh-pages D:\dev\src\rts1\build\web
-New-Item -ItemType File D:\dev\src\rts1\build\web\.nojekyll   # serve files as-is, skip Jekyll
-```
+One-time setup on GitHub: **Settings > Pages > Build and deployment > Source: GitHub Actions**. The game is then served at `https://e-soul.github.io/rts1/`.
 
-Then on GitHub: **Settings > Pages > Build and deployment > Source: Deploy from a branch**, branch `gh-pages`, folder `/ (root)`. The game is served at `https://<user>.github.io/<repository>/`.
-
-Build (the worktree above creates `build/web`; for a local-only build, create the folder first with `New-Item -ItemType Directory D:\dev\src\rts1\build\web`, because Godot does not create it):
+Build locally (Godot does not create the output folder):
 
 ```powershell
+New-Item -ItemType Directory -Force D:\dev\src\rts1\build\web | Out-Null
 & "D:\app\Godot_v4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe" --headless --path D:\dev\src\rts1\prototype --export-release "Web"
 ```
 
-Test locally before deploying. Any static server works; opening `index.html` from disk does not.
+Test locally. Any static server works; opening `index.html` from disk does not.
 
 ```powershell
 python -m http.server 8000 --directory D:\dev\src\rts1\build\web   # then open http://localhost:8000
-```
-
-Deploy:
-
-```powershell
-$web = "D:\dev\src\rts1\build\web"
-git -C $web add -A
-git -C $web commit -m "Deploy web build"            # first deploy
-git -C $web push -u origin gh-pages
-# Later deploys: replace the single commit, so ~40 MB of wasm per build does not pile up in history.
-git -C $web add -A
-git -C $web commit --amend -m "Deploy web build"
-git -C $web push --force origin gh-pages
 ```
 
 Browser notes:
