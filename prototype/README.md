@@ -14,6 +14,10 @@ $godot = "D:\app\Godot_v4.7.2-stable"
 & "$godot\Godot_v4.7.2-stable_win64_console.exe" --headless --path D:\dev\src\rts1\prototype --script res://tests/run_tests.gd -- [filter]
 # Windowed smoke test of the presentation; optional screenshot directory
 & "$godot\Godot_v4.7.2-stable_win64_console.exe" --path D:\dev\src\rts1\prototype --script res://tests/smoke_view.gd -- [screenshot_dir]
+# Record the scripted controls demo (~25 s) as a PNG sequence, then encode it with ffmpeg
+New-Item -ItemType Directory -Force D:\dev\src\rts1\build\demo\frames | Out-Null
+& "$godot\Godot_v4.7.2-stable_win64_console.exe" --path D:\dev\src\rts1\prototype --script res://tools/record_demo.gd --write-movie D:\dev\src\rts1\build\demo\frames\demo.png --fixed-fps 60
+ffmpeg -framerate 60 -i D:\dev\src\rts1\build\demo\frames\demo%08d.png -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart D:\dev\src\rts1\build\demo\demo.mp4
 # Web build into ../build/web; the folder must exist (deploying to GitHub Pages: see PROTOTYPE_PLAN.md, "Web build")
 New-Item -ItemType Directory -Force D:\dev\src\rts1\build\web | Out-Null
 & "$godot\Godot_v4.7.2-stable_win64_console.exe" --headless --path D:\dev\src\rts1\prototype --export-release "Web"
@@ -59,6 +63,7 @@ All bindings live in [input/bindings.gd](input/bindings.gd) and are registered i
 - `data/tuning.json`: every number (placeholders).
 - `scenarios/*.json`: setups shared by the sandbox (F6) and the tests.
 - `tests/`: `run_tests.gd` runner and test files; `smoke_view.gd` windowed smoke test.
+- `tools/record_demo.gd`: scripted gamepad demo with captions and a virtual-pad overlay, for recording with Movie Maker mode.
 
 ## Setup files
 
